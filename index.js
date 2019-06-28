@@ -1,7 +1,10 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+
 const sequelize = require('./db')
 const db = require('./db')
+
+const playlists = require('./playlists/model')
 
 const app = express()
 
