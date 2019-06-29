@@ -1,10 +1,12 @@
 const { Router } = require('express')
 const Playlists = require('./model')
+const Songs = require('../songs/model')
+const auth = require('../auth/middleware')
 const router = new Router()
 
-router.get('/playlists', (req, res, next) => {
+router.get('/playlists', auth, (req, res, next) => {
     Playlists
-        .findAll()
+        .findAll({ where: { userId: `${req.body.userId}` } })
         .then(playlists => {
             res
                 .status(200)
@@ -21,16 +23,19 @@ router.get('/playlists', (req, res, next) => {
                 })
         })
 })
-router.post('/playlists', (req, res, next) => {
+router.post('/playlists', auth, (req, res, next) => {
     Playlists
         .create(req.body)
-        .then(playlist =>
-            res
-                .status(201)
-                .json({
-                    message: "created new palylist",
-                    playlist
-                }))
+        .then(playlist => {
+            if (!playlist) {
+                return res.status(404).send({
+                    message: "Playlist does not exist"
+                })
+            } return res.status(201).json({
+                message: "created new palylist",
+                playlist
+            })
+        })
         .catch(err => {
             res
                 .status(422)
@@ -40,14 +45,17 @@ router.post('/playlists', (req, res, next) => {
                 })
         })
 })
-router.get('/playlists/:id', (req, res, next) => {
+router.get('/playlists/:id', auth, (req, res, next) => {
     const id = req.param.id
     Playlists
-        .findByPk(id)
-        .then(playlist =>
-            res
-                .status(200)
-                .json(playlist))
+        .findByPk(id, { include: [{ model: Songs, as: 'songs' }] })
+        .then(playlist => {
+            if (!playlist || playlist.userId !== req.body.userId) {
+                return res.status(404).send({
+                    message: "Not authorized"
+                })
+            } return res.json(playlist)
+        })
         .catch(err => {
             res
                 .status(404)
@@ -57,20 +65,21 @@ router.get('/playlists/:id', (req, res, next) => {
                 })
         })
 })
-router.delete('/playlists/:id', (req, res, next) => {
+router.delete('/playlists/:id', auth, (req, res, next) => {
     const id = req.params.id
     Playlists
         .findByPk(id)
-        .then(playlist =>
-            playlist
-                .destroy())
-        .then(() => {
-            res
-                .status(200)
-                .send({
-                    message: `deleted the playlist id ${id}`
-                })})
-        .catch(err => next(err))
+        .then(playlist => {
+            if (!playlist || playlist.userId !== req.body.userId) {
+                return res.status(404).send({ message: "Not authorized" })
+            } return playlist.destroy().then(() =>
+                res
+                    .status(200)
+                    .send({
+                        message: `Deleted the playlist id ${id}`
+                    }))
+                .catch(err => next(err))
+        })
 })
 
 module.exports = router
