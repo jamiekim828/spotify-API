@@ -10,7 +10,7 @@ router.post('/user', function (req, res, next) {
         password: bcrypt.hashSync(req.body.password, 10)
     }
     User
-        .create(req.body)
+        .create(user)
         .then(user => res.status(201).json({
             message: 'New User Added',
             user: user

@@ -2,7 +2,7 @@ const { Router } = require('express')
 const playlists = require('../playlists/model')
 const router = new Router()
 
-router.get('/artists', (req, res, next) => {
+router.get('/artists', auth, (req, res, next) => {
     playlists.findAll({
         where: { userId: req.user.id },
         include: [Songs]
@@ -12,11 +12,11 @@ router.get('/artists', (req, res, next) => {
     .catch(err => {res.status(404).json(err)})
 })
 
-router.put('/playlists/:id/songs/:id', (req, res, next) => {
+router.put('/playlists/:id/songs/:id', auth, (req, res, next) => {
 
 })
 
-router.delete('/playlists/:id/songs/:id', (req, res, next) => {
+router.delete('/playlists/:id/songs/:id', auth, (req, res, next) => {
     
 })
 

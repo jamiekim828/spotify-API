@@ -12,6 +12,6 @@ const Playlists = db.define('playlists', {
         tableName: 'playlists'
     })
 
-Playlists.belongsTo(User)
+Playlists.belongsTo(User, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' })
 
 module.exports = Playlists 

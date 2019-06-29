@@ -24,7 +24,7 @@ const Songs = db.define('songs', {
         timestamps: false
     })
 
-Songs.belongsTo(Playlists)
-Songs.belongsTo(User)
+Songs.belongsTo(Playlists, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' })
+Songs.belongsTo(User, {  foreignKey: { allowNull: false }, onDelete: 'CASCADE' })
 
 module.exports = Songs 

@@ -46,7 +46,7 @@ router.post('/tokens', (req, res) => {
             })
     }
 })
-router.get('/secret-endpoint', (req, res) => {
+router.get('/secret-endpoint', auth, (req, res) => {
     res.send({
         message: `Thanks for visiting the secret endpoint ${req.user.email}.`,
     })
