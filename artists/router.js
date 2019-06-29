@@ -1,9 +1,8 @@
 const { Router } = require('express')
-const auth = require('../auth/middleware')
 const playlists = require('../playlists/model')
 const router = new Router()
 
-router.get('/artists', auth, (req, res, next) => {
+router.get('/artists', (req, res, next) => {
     playlists.findAll({
         where: { userId: req.user.id },
         include: [Songs]
