@@ -6,7 +6,7 @@ const router = new Router()
 
 router.get('/playlists', auth, (req, res, next) => {
     Playlists
-        .findAll({ where: { userId: `${req.body.userId}` } })
+        .findAll({ where: { userId: `${req.user.id}` } })
         .then(playlists => {
             res
                 .status(200)
@@ -25,7 +25,7 @@ router.get('/playlists', auth, (req, res, next) => {
 })
 router.post('/playlists', auth, (req, res, next) => {
     Playlists
-        .create(req.body)
+        .create({...req.body, userId: req.user.id})
         .then(playlist => {
             if (!playlist) {
                 return res.status(404).send({
@@ -48,13 +48,14 @@ router.post('/playlists', auth, (req, res, next) => {
 router.get('/playlists/:id', auth, (req, res, next) => {
     const id = req.param.id
     Playlists
-        .findByPk(id, { include: [{ model: Songs, as: 'songs' }] })
+        .findByPk(id, { include: [{ model: [Songs], as: 'songs' }] })
         .then(playlist => {
-            if (!playlist || playlist.userId !== req.body.userId) {
+            
+            if (!playlist || playlist.userId !== req.user.id) {
                 return res.status(404).send({
                     message: "Not authorized"
                 })
-            } return res.json(playlist)
+            } return res.send(playlist)
         })
         .catch(err => {
             res
@@ -70,7 +71,7 @@ router.delete('/playlists/:id', auth, (req, res, next) => {
     Playlists
         .findByPk(id)
         .then(playlist => {
-            if (!playlist || playlist.userId !== req.body.userId) {
+            if (!playlist || playlist.userId !== req.user.id) {
                 return res.status(404).send({ message: "Not authorized" })
             } return playlist.destroy().then(() =>
                 res
