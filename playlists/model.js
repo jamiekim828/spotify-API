@@ -9,7 +9,7 @@ const Playlists = db.define('playlists', {
         allowNull: false
     }
 }, {
-        tableName: 'music_playlists'
+        tableName: 'playlists'
     })
 
 Playlists.belongsTo(User)

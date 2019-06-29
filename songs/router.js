@@ -4,24 +4,32 @@ const Songs = require('./model')
 const auth = require("../auth/middleware")
 const router = new Router()
 
-router.post('/playlists/:id/songs', (req, res) => {
+router.post('/playlists/:id/songs', auth, (req, res) => {
     const id = req.param.id
-    req.body.playlistsId = id
-    Promise
-        .all([Songs.create(req.body),
-              Playlists.findByPk(id)])
-        .then(([song, playlist]) => {
-            if (playlist.userId !== req.body.userId) {
+    Playlists
+        .findOne({
+            where: { id: req.params.id }
+        })
+        .then(playlist => {
+            if (!playlist) {
                 return res
                     .status(404)
                     .send({
-                        message: `You are not authorized to do this`
+                        message: 'Playlist does not exist'
                     })
-            } return res
-                .status(201)
-                .send(song)
+            }
+            Songs
+                .create({
+                    Title: Title,
+                    artist: artist,
+                    album: album,
+                    playlistId: Playlists.id
+                })
+                .then(song => res
+                    .status(201)
+                    .send({ song: song }))
         })
-        .catch(err => res.send({ error: `${err.message}` }))
+        .catch(err => res.status(422).send(err))
 })
 
 module.exports = router

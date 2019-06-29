@@ -12,36 +12,33 @@ router.post('/user', function (req, res, next) {
     User
         .create(req.body)
         .then(user => res.status(201).json({
-            message: " New User Added",
+            message: 'New User Added',
             user: user
         }))
         .catch(err => next(err))
 })
 
-router.post('/tokens', function (req, res, next) {
+router.post('/tokens', function (req, res) {
     const email = req.body.email
     const password = req.body.password
-    if (email && password) {
+    if(email && password) {
         User.findOne({
-            where: { email: eamil}
-        }).then(entity => {
-            if(!entity) {
-                req.status(400).send({message: "User does not exist"})
+            where: {email: eamil}
+        })
+        .then(res => console.log(res))
+        .then(email => {
+            if(!email) {
+                return res.status(400).send({ message: 'User does not exist'})   
             }
-            if(bcrypt.compareSync(password, entity.password)) {
-                res.send({
-                    jwt: toJWT({token: "<JWT>"})
+            if(!bcrypt.compareSync(password, email.password)) {
+                return res.status(400).send({ message: 'Password is incorrct'
                 })
-            } else {
-                res.status(400).send({message: 'Password was incorrect'})
             }
+            res.send({ jwt: toJWT({ token: "<JWT>" })})
         })
-        .catch(err => {
-            console.log(err)
-            res.status(500).send({message: 'Something went wrong'})
-        })
-    } else {
-        res.status(400).send({ message: "Supply valid email and password"})
+        .catch(err => {res
+            .status(500)
+            .send({message: 'Something went wrong'})})
     }
 })
 
