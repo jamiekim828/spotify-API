@@ -2,11 +2,11 @@ const { Router } = require('express')
 const { toJWT } = require('./jwt')
 const bcrypt = require('bcrypt')
 const user = require('../user/model')
-// const auth = require('./middleware')
+const auth = require('./middleware')
 
 const router = new Router()
 
-router.post('/logins', (req, res) => {
+router.post('/tokens', (req, res) => {
 
     const email = req.body.email
     const password = req.body.password
@@ -16,7 +16,7 @@ router.post('/logins', (req, res) => {
             message: 'Please supply a valid email and password'
         })
     } else {
-        user
+        User
             .findOne({
                 where: {
                     email: req.body.email
@@ -40,7 +40,6 @@ router.post('/logins', (req, res) => {
                 }
             })
             .catch(err => {
-                console.error(err)
                 res.status(500).send({
                     message: 'Something went wrong'
                 })

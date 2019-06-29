@@ -4,6 +4,7 @@ const sequelize = new Sequelize(databaseURL)
 
 sequelize
     .sync()
+    // {force:true} //erased after create playlistId and userId
     .then(() => console.log('Database schema updated'))
     .catch(console.error)
 
