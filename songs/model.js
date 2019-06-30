@@ -1,12 +1,10 @@
 const Sequelize = require('sequelize')
 const db = require('../db')
-const Playlists = require('../playlists/model')
-const User = require('../user/model')
 
 const Songs = db.define('songs', {
-    Title: {
+    title: {
         type: Sequelize.STRING,
-        field: 'Title',
+        field: 'title',
         allowNull: false
     },
     artist: {
@@ -23,7 +21,5 @@ const Songs = db.define('songs', {
         tableName: 'songs',
         timestamps: false
     })
-
-Songs.belongsTo(Playlists, { foreignKey: { allowNull: false }, onDelete: 'CASCADE' })
 
 module.exports = Songs 

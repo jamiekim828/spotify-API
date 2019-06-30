@@ -20,10 +20,10 @@ router.post('/playlists/:id/songs', auth, (req, res) => {
             }
             Songs
                 .create({
-                    Title: Title,
+                    title: title,
                     artist: artist,
                     album: album,
-                    playlistId: Playlists.id
+                    playlistId: Playlists.id,...req.body
                 })
                 .then(song => res
                     .status(201)

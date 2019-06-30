@@ -46,7 +46,7 @@ router.post('/playlists', auth, (req, res, next) => {
         })
 })
 router.get('/playlists/:id', auth, (req, res, next) => {
-    const id = req.param.id
+    const id = req.params.id
     Playlists
         .findByPk(id, { include: [{ model: [Songs], as: 'songs' }] })
         .then(playlist => {
